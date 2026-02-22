@@ -1,49 +1,38 @@
 package com.epam.finaltask.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class VoucherDTO {
-    private String id;
 
-    @NotEmpty(message = "Title cannot be empty")
-    private String title;
+	private String id;
 
-    @NotEmpty(message = "Description cannot be empty")
-    private String description;
+	private String title;
 
-    @NotNull(message = "Price cannot be null")
-    @Positive(message = "Price must be positive")
-    private Double price;
+	private String description;
 
-    @NotEmpty(message = "Tour type cannot be empty")
-    private String tourType;
+	private Double price;
 
-    @NotEmpty(message = "Transfer type cannot be empty")
-    private String transferType;
+	private String tourType;
 
-    @NotEmpty(message = "Hotel type cannot be empty")
-    private String hotelType;
+	private String transferType;
 
-    @NotEmpty(message = "Status cannot be empty")
-    private String status;
+	private String hotelType;
 
-    @NotNull(message = "Arrival date cannot be null")
-    private LocalDate arrivalDate;
+	private String status;
 
-    @NotNull(message = "Eviction date cannot be null")
-    private LocalDate evictionDate;
+	private LocalDate arrivalDate;
 
-    private UUID userId;
+	private LocalDate evictionDate;
 
-    private Boolean isHot;
+	private UUID userId;
+
+	private Boolean isHot;
 }

@@ -1,51 +1,40 @@
 package com.epam.finaltask.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-@Setter
-@Getter
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Entity
+@Table(name = "app_user")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Builder
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "phoneNumber")
-        })
 public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
 
-  @NotBlank
-  @Size(max = 20)
-  private String username;
+	@Id
+	private UUID id;
 
-  @NotBlank
-  @Size(max = 120)
-  private String password;
+	private String username;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "role")
-  private Role role;
+	@ToString.Exclude
+	private String password;
 
-  @OneToMany(mappedBy = "user")
-  private List<Voucher> vouchers = new ArrayList<>();
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
-  @NotBlank
-  @Size(max = 50)
-  private String phoneNumber;
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	private List<Voucher> vouchers;
 
-  private double balance;
+	private String phoneNumber;
 
-  private boolean active;
+	private BigDecimal balance;
 
+	private boolean active;
 }

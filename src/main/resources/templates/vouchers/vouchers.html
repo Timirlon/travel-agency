@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Available Vouchers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <h2 th:text="#{vouchers.title}">Available Vouchers</h2>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form method="get" class="row mb-4">
+            <div class="col-md-2">
+                <input type="number" step="0.01" name="maxPrice" class="form-control" th:placeholder="#{vouchers.price}"
+                       th:value="${param.maxPrice}">
+            </div>
+            <div class="col-md-2">
+                <select name="tourType" class="form-select">
+                    <option value="" th:text="#{vouchers.tourType}"></option>
+                    <option th:each="type : ${tourTypes}"
+                            th:value="${type}"
+                            th:text="${type}"
+                            th:selected="${param.tourType == type}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="transferType" class="form-select">
+                    <option value="" th:text="#{vouchers.transfer}"></option>
+                    <option th:each="type : ${transferTypes}"
+                            th:value="${type}"
+                            th:text="${type}"
+                            th:selected="${param.transferType == type}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="hotelType" class="form-select">
+                    <option value="" th:text="#{vouchers.hotel}"></option>
+                    <option th:each="type : ${hotelTypes}"
+                            th:value="${type}"
+                            th:text="${type}"
+                            th:selected="${param.hotelType == type}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit" th:text="#{vouchers.filter}">Filter</button>
+            </div>
+        </form>
+
+        <div th:if="${isAdmin}" class="mb-3">
+            <a href="#" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#addForm">+ Add Voucher</a>
+            <div id="addForm" class="collapse mt-3">
+                <form th:action="@{/vouchers/add}" method="post" class="row g-2">
+                    <div class="col-md-3"><input name="title" class="form-control" placeholder="Title" required></div>
+                    <div class="col-md-3"><input name="description" class="form-control" placeholder="Description" required></div>
+                    <div class="col-md-2"><input name="price" class="form-control" placeholder="Price" type="number" step="0.01" required></div>
+                    <div class="col-md-2"><input name="arrivalDate" class="form-control" type="date" required></div>
+                    <div class="col-md-2"><input name="evictionDate" class="form-control" type="date" required></div>
+                    <div class="col-md-2">
+                        <select name="tourType" class="form-select" required>
+                            <option th:each="type : ${tourTypes}" th:value="${type}" th:text="${type}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="transferType" class="form-select" required>
+                            <option th:each="type : ${transferTypes}" th:value="${type}" th:text="${type}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="hotelType" class="form-select" required>
+                            <option th:each="type : ${hotelTypes}" th:value="${type}" th:text="${type}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="status" class="form-select" required>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="isHot" class="form-select">
+                            <option value="false">Not Hot</option>
+                            <option value="true">Hot</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success w-100">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Tour</th>
+                <th>Transfer</th>
+                <th>Hotel</th>
+                <th>Status</th>
+                <th>Arrival</th>
+                <th>Eviction</th>
+                <th>Hot</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vouchers}">
+                <th:block th:if="${isAdmin}">
+                    <form th:action="@{'/vouchers/edit/' + ${v.id}}" method="post">
+                        <td><input type="text" name="title" class="form-control form-control-sm" th:value="${v.title}" required /></td>
+                        <td><input type="text" name="description" class="form-control form-control-sm" th:value="${v.description}" required /></td>
+                        <td><input type="number" step="0.01" name="price" class="form-control form-control-sm" th:value="${v.price}" required /></td>
+                        <td>
+                            <select name="tourType" class="form-select form-select-sm" required>
+                                <option th:each="type : ${tourTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${type.name() == v.tourType}"></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="transferType" class="form-select form-select-sm" required>
+                                <option th:each="type : ${transferTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${type.name() == v.transferType}"></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="hotelType" class="form-select form-select-sm" required>
+                                <option th:each="type : ${hotelTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}"
+                                        th:selected="${type.name() == v.hotelType}"></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="status" class="form-select form-select-sm" required>
+                                <option th:each="s : ${statuses}"
+                                        th:value="${s}"
+                                        th:text="${s}"
+                                        th:selected="${s.name() == v.status}"></option>
+                            </select>
+                        </td>
+                        <td><input type="date" name="arrivalDate" class="form-control form-control-sm" th:value="${v.arrivalDate}" required /></td>
+                        <td><input type="date" name="evictionDate" class="form-control form-control-sm" th:value="${v.evictionDate}" required /></td>
+                        <td>
+                            <select name="isHot" class="form-select form-select-sm">
+                                <option value="true" th:selected="${v.isHot}">HOT</option>
+                                <option value="false" th:selected="${!v.isHot}">No</option>
+                            </select>
+                        </td>
+                        <td class="d-grid gap-1">
+                            <button class="btn btn-sm btn-primary mb-1" type="submit">Save</button>
+                    </form>
+                    <form th:action="@{'/vouchers/delete/' + ${v.id}}" method="post">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </th:block>
+
+                <th:block th:if="${!isAdmin}">
+                    <td th:text="${v.title}"></td>
+                    <td th:text="${v.description}"></td>
+                    <td th:text="${v.price}"></td>
+                    <td th:text="${v.tourType}"></td>
+                    <td th:text="${v.transferType}"></td>
+                    <td th:text="${v.hotelType}"></td>
+                    <td th:text="${v.status}"></td>
+                    <td th:text="${v.arrivalDate}"></td>
+                    <td th:text="${v.evictionDate}"></td>
+                    <td>
+                        <span th:if="${v.isHot}" class="badge bg-danger">HOT</span>
+                        <span th:if="${!v.isHot}" class="badge bg-secondary">No</span>
+                    </td>
+                    <td>
+                        <form th:action="@{'/vouchers/order/' + ${v.id}}"
+                              method="post"
+                              th:if="${user != null}"
+                              onsubmit="return confirm('Are you sure you want to book this tour?')">
+                            <input type="hidden" name="userId" th:value="${user.id}" />
+                            <button class="btn btn-sm btn-success">Book</button>
+                        </form>
+
+                        <form th:action="@{'/vouchers/hot/' + ${v.id}}" method="post" th:if="${isManager}" class="mt-1">
+                            <input type="hidden" name="isHot" th:value="${!v.isHot}" />
+                            <button class="btn btn-sm btn-warning" th:text="${v.isHot} ? 'Unmark Hot' : 'Mark Hot'"></button>
+                        </form>
+
+                        <form th:action="@{'/vouchers/status/' + ${v.id}}" method="post" th:if="${isManager}" class="mt-1">
+                            <select name="status" class="form-select form-select-sm mb-1">
+                                <option th:each="s : ${statuses}"
+                                        th:value="${s}"
+                                        th:text="${s}"
+                                        th:selected="${s.name() == v.status}"></option>
+                            </select>
+                            <button class="btn btn-sm btn-secondary">Change</button>
+                        </form>
+                    </td>
+                </th:block>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

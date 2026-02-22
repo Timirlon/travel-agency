@@ -1,29 +1,27 @@
 package com.epam.finaltask.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Setter
-@Getter
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "vouchers")
 public class Voucher {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
     private String title;
 
     private String description;
 
-    private double price;
+    private Double price;
 
     @Enumerated(EnumType.STRING)
     private TourType tourType;
@@ -35,7 +33,7 @@ public class Voucher {
     private HotelType hotelType;
 
     @Enumerated(EnumType.STRING)
-    private VoucherStatus status = VoucherStatus.REGISTERED;
+    private VoucherStatus status;
 
     private LocalDate arrivalDate;
 
@@ -46,4 +44,6 @@ public class Voucher {
     private User user;
 
     private boolean isHot;
+
+
 }

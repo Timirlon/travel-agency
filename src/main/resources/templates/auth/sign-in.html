@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4" th:text="#{login.title}"></h2>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <form th:action="@{/login}" th:object="${loginRequest}" method="post">
+        <div class="form-group">
+            <label for="username" th:text="#{login.username}"></label>
+            <input th:field="*{username}" type="text" class="form-control" id="username" th:placeholder="#{login.enterUsername}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password" th:text="#{login.password}"></label>
+            <input th:field="*{password}" type="password" class="form-control" id="password" th:placeholder="#{login.enterPassword}" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="#{login.title}"></button>
+    </form>
+</div>
+</body>
+</html>
+

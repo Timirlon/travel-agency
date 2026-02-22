@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>My Vouchers</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <h2>Your Booked Vouchers</h2>
+
+        <div th:if="${vouchers.isEmpty()}">
+            <p>You haven't booked any vouchers yet.</p>
+        </div>
+
+        <table class="table" th:if="${!vouchers.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Arrival</th>
+                <th>Eviction</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vouchers}">
+                <td th:text="${v.title}"></td>
+                <td th:text="${v.description}"></td>
+                <td th:text="${v.price}"></td>
+                <td th:text="${v.status}"></td>
+                <td th:text="${v.arrivalDate}"></td>
+                <td th:text="${v.evictionDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

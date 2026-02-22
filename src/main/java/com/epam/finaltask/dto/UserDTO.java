@@ -1,42 +1,42 @@
 package com.epam.finaltask.dto;
 
+import java.util.List;
+
+import com.epam.finaltask.model.Voucher;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID;
-
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserDTO {
-    private UUID id;
 
-    @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
-    private String username;
+	private String id;
 
-    @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).*$")
-    @Size(min = 7, max = 30)
-    private String password;
+	@NotBlank(message = "Username is required")
+	private String username;
 
-    private String role;
-    private boolean active;
-    private double balance;
+	@NotBlank(message = "Password is required")
+	@Size(min = 8, message = "Password must be at least 8 characters long")
+	@Pattern(
+			regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_])[A-Za-z\\d@$!%*?&_]+$",
+			message = "Password must contain uppercase, lowercase, digit, and special characters"
+	)
+	@ToString.Exclude
+	private String password;
 
-    @NotBlank
-    @Pattern(regexp = "\\+?[0-9]{7,15}")
-    private String phoneNumber;
+	private String role;
 
-    public void setId(String id) {
-        this.id = UUID.fromString(id);
-    }
+	private List<VoucherDTO> vouchers;
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	@NotBlank(message = "Phone number is necessary for us to contact you")
+	private String phoneNumber;
+
+	private Double balance;
+
+	private boolean active;
 }

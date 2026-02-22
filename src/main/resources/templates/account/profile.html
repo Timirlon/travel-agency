@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>My Account</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <h2>My Account</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                <p><strong>Phone Number:</strong> <span th:text="${user.phoneNumber}"></span></p>
+                <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+                <p><strong>Balance:</strong> <span th:text="${user.balance} + ' ₸'"></span></p>
+                <p><strong>Status:</strong>
+                    <span th:text="${user.active} ? 'Active' : 'Blocked'"
+                          th:classappend="${user.active} ? 'text-success' : 'text-danger'"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
