@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Voucher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background-color: #c7c5c5;
+        }
+
+        .voucher-card h5 {
+            margin-bottom: 10px;
+        }
+
+        .voucher-card p {
+            margin: 5px 0;
+        }
+
+        .navbar .container-fluid {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar .btn-custom {
+            background-color: #c7c5c5;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar .btn-custom:hover {
+            background-color: #4a4a4a;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #c7c5c5;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 20px;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .btn-save:hover {
+            background-color: #4a4a4a;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid d-flex">
+        <div class="d-flex">
+            <button class="btn btn-custom" id="usersButton">Users</button>
+            <button class="btn btn-custom" id="voucherButton">Vouchers</button>
+        </div>
+        <select id="languageSelect" class="form-select form-select-sm" style="width: auto;">
+            <option value="en">English</option>
+            <option value="kk">Қазақша</option>
+        </select>
+        <button class="btn ms-auto btn-custom" id="logoutButton">Logout</button>
+    </div>
+</nav>
+
+<div class="container d-flex flex-column align-items-center vh-100 py-5">
+    <h3 class="text-center mb-4"  id="formTitle">Edit Voucher</h3>
+    <div class="form-container w-100">
+        <form id="editVoucherForm">
+            <div class="mb-3">
+                <label for="title" class="form-label" id="titleLabel">Title</label>
+                <input type="text" class="form-control" id="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label" id="descriptionLabel">Description</label>
+                <textarea class="form-control" id="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label" id="priceLabel">Price</label>
+                <input type="number" step="0.01" class="form-control" id="price" required>
+            </div>
+            <div class="mb-3">
+                <label for="tourType" class="form-label" id="tourTypeLabel">Tour Type</label>
+                <select class="form-select" id="tourType" required>
+                    <option value="">Choose...</option>
+                    <option value="HEALTH">Health</option>
+                    <option value="SPORTS">Sports</option>
+                    <option value="LEISURE">Leisure</option>
+                    <option value="SAFARI">Safari</option>
+                    <option value="WINE">Wine</option>
+                    <option value="ECO">Eco</option>
+                    <option value="ADVENTURE">Adventure</option>
+                    <option value="CULTURAL">Cultural</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="transferType" class="form-label" id="transferTypeLabel">Transfer Type</label>
+                <select class="form-select" id="transferType" required>
+                    <option value="">Choose...</option>
+                    <option value="BUS">Bus</option>
+                    <option value="TRAIN">Train</option>
+                    <option value="PLANE">Plane</option>
+                    <option value="SHIP">Ship</option>
+                    <option value="PRIVATE_CAR">Private Car</option>
+                    <option value="JEEPS">Jeeps</option>
+                    <option value="MINIBUS">Minibus</option>
+                    <option value="ELECTRICAL_CARS">Electrical Cars</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="hotelType" class="form-label" id="hotelTypeLabel">Hotel Type</label>
+                <select class="form-select" id="hotelType" required>
+                    <option value="">Choose...</option>
+                    <option value="ONE_STAR">1 Star</option>
+                    <option value="TWO_STARS">2 Stars</option>
+                    <option value="THREE_STARS">3 Stars</option>
+                    <option value="FOUR_STARS">4 Stars</option>
+                    <option value="FIVE_STARS">5 Stars</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label" id="statusLabel">Status</label>
+                <select class="form-select" id="status" required>
+                    <option value="">Choose...</option>
+                    <option value="REGISTERED">Registered</option>
+                    <option value="PAID">Paid</option>
+                    <option value="CANCELED">Canceled</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="arrivalDate" class="form-label" id="arrivalDateLabel">Arrival Date</label>
+                <input type="date" class="form-control" id="arrivalDate" required>
+            </div>
+            <div class="mb-3">
+                <label for="evictionDate" class="form-label"  id="evictionDateLabel">Eviction Date</label>
+                <input type="date" class="form-control" id="evictionDate" required>
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="isHot">
+                <label for="isHot" class="form-check-label" id="isHotLabel">Hot Voucher</label>
+            </div>
+                <button type="submit" class="btn btn-save"  id="saveButton">Save</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+
+    const translations = {
+        en: {
+            formTitle: "Edit voucher",
+            titleLabel: "Title",
+            descriptionLabel: "Description",
+            priceLabel: "Price",
+            tourTypeLabel: "Tour Type",
+            transferTypeLabel: "Transfer Type",
+            hotelTypeLabel: "Hotel Type",
+            statusLabel: "Status",
+            arrivalDateLabel: "Arrival Date",
+            evictionDateLabel: "Eviction Date",
+            isHotLabel: "Hot Voucher",
+            saveButton: "Save changes",
+            usersButton: "Users",
+            voucherButton: "Vouchers",
+            logoutButton: "Logout",
+            alerts: {
+                loadError: "Failed to load voucher data.",
+                pastArrivalDate: "Arrival date cannot be in the past.",
+                invalidDateOrder: "Arrival date cannot be later than eviction date.",
+                updateError: "Failed to update voucher.",
+                updateSuccess: "Voucher updated successfully."
+            },
+            options: {
+                tourType: {
+                    HEALTH: "Health",
+                    SPORTS: "Sports",
+                    LEISURE: "Leisure",
+                    SAFARI: "Safari",
+                    WINE: "Wine",
+                    ECO: "Eco",
+                    ADVENTURE: "Adventure",
+                    CULTURAL: "Cultural"
+                },
+                transferType: {
+                    BUS: "Bus",
+                    TRAIN: "Train",
+                    PLANE: "Plane",
+                    SHIP: "Ship",
+                    PRIVATE_CAR: "Private Car",
+                    JEEPS: "Jeeps",
+                    MINIBUS: "Minibus",
+                    ELECTRICAL_CARS: "Electrical Cars"
+                },
+                hotelType: {
+                    ONE_STAR: "One Star",
+                    TWO_STARS: "Two Stars",
+                    THREE_STARS: "Three Stars",
+                    FOUR_STARS: "Four Stars",
+                    FIVE_STARS: "Five Stars"
+                },
+                status: {
+                    REGISTERED: "Registered"
+                }
+            }
+        },
+        kk: {
+            formTitle: "Ваучерді өңдеу",
+            titleLabel: "Атауы",
+            descriptionLabel: "Сипаттамасы",
+            priceLabel: "Бағасы",
+            tourTypeLabel: "Тур түрі",
+            transferTypeLabel: "Трансфер түрі",
+            hotelTypeLabel: "Қонақүй түрі",
+            statusLabel: "Күйі",
+            arrivalDateLabel: "Келу күні",
+            evictionDateLabel: "Шығу күні",
+            isHotLabel: "Ыстық ваучер",
+            saveButton: "Өзгерістерді сақтау",
+            usersButton: "Пайдаланушылар",
+            voucherButton: "Ваучерлер",
+            logoutButton: "Шығу",
+            alerts: {
+                loadError: "Ваучер деректерін жүктеу сәтсіз аяқталды.",
+                pastArrivalDate: "Келу күні өткен күн болмауы керек.",
+                invalidDateOrder: "Келу күні шығу күнінен кейін болмауы керек.",
+                updateError: "Ваучерді жаңарту сәтсіз аяқталды.",
+                updateSuccess: "Ваучер сәтті жаңартылды."
+            },
+            options: {
+                tourType: {
+                    HEALTH: "Денсаулық",
+                    SPORTS: "Спорт",
+                    LEISURE: "Демалыс",
+                    SAFARI: "Сафари",
+                    WINE: "Шарап туры",
+                    ECO: "Эко",
+                    ADVENTURE: "Шытырман",
+                    CULTURAL: "Мәдени"
+                },
+                transferType: {
+                    BUS: "Автобус",
+                    TRAIN: "Пойыз",
+                    PLANE: "Ұшақ",
+                    SHIP: "Кеме",
+                    PRIVATE_CAR: "Жеке көлік",
+                    JEEPS: "Джиптер",
+                    MINIBUS: "Микроавтобус",
+                    ELECTRICAL_CARS: "Электромобильдер"
+                },
+                hotelType: {
+                    ONE_STAR: "Бір жұлдызды",
+                    TWO_STARS: "Екі жұлдызды",
+                    THREE_STARS: "Үш жұлдызды",
+                    FOUR_STARS: "Төрт жұлдызды",
+                    FIVE_STARS: "Бес жұлдызды"
+                },
+                status: {
+                    REGISTERED: "Тіркелген"
+                }
+            }
+        }
+    };
+    const updateOptions = (language) => {
+        const updateDropdown = (dropdownId, options) => {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.innerHTML = "";
+            for (const [value, label] of Object.entries(options)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                dropdown.appendChild(option);
+            }
+        };
+        updateDropdown('tourType', translations[language].options.tourType);
+        updateDropdown('transferType', translations[language].options.transferType);
+        updateDropdown('hotelType', translations[language].options.hotelType);
+        updateDropdown('status', translations[language].options.status);
+    };
+    const languageSelect = document.getElementById('languageSelect');
+    const updateLanguage = (language) => {
+        document.getElementById('formTitle').textContent = translations[language].formTitle;
+        document.getElementById('titleLabel').textContent = translations[language].titleLabel;
+        document.getElementById('descriptionLabel').textContent = translations[language].descriptionLabel;
+        document.getElementById('priceLabel').textContent = translations[language].priceLabel;
+        document.getElementById('tourTypeLabel').textContent = translations[language].tourTypeLabel;
+        document.getElementById('transferTypeLabel').textContent = translations[language].transferTypeLabel;
+        document.getElementById('hotelTypeLabel').textContent = translations[language].hotelTypeLabel;
+        document.getElementById('statusLabel').textContent = translations[language].statusLabel;
+        document.getElementById('arrivalDateLabel').textContent = translations[language].arrivalDateLabel;
+        document.getElementById('evictionDateLabel').textContent = translations[language].evictionDateLabel;
+        document.getElementById('isHotLabel').textContent = translations[language].isHotLabel;
+        document.getElementById('saveButton').textContent = translations[language].saveButton;
+        document.getElementById('usersButton').textContent = translations[language].usersButton;
+        document.getElementById('voucherButton').textContent = translations[language].voucherButton;
+        document.getElementById('logoutButton').textContent = translations[language].logoutButton;
+        updateOptions(language);
+    };
+
+    const setInitialLanguage = () => {
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        document.getElementById('languageSelect').value = savedLanguage;
+        updateLanguage(savedLanguage);
+    };
+
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+        const selectedLanguage = e.target.value;
+        localStorage.setItem('language', selectedLanguage);
+        updateLanguage(selectedLanguage);
+    });
+
+    setInitialLanguage();
+
+    if (!token) {
+        window.location.href = '/view/login';
+    }
+
+    const voucherId = window.location.pathname.split('/').pop();
+    const language = document.getElementById('languageSelect').value;
+    fetch(`/vouchers/voucher/${voucherId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept-Language': languageSelect.value
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('title').value = data.title;
+            document.getElementById('description').value = data.description;
+            document.getElementById('price').value = data.price;
+            document.getElementById('tourType').value = data.tourType;
+            document.getElementById('transferType').value = data.transferType;
+            document.getElementById('hotelType').value = data.hotelType;
+            document.getElementById('arrivalDate').value = data.arrivalDate;
+            document.getElementById('evictionDate').value = data.evictionDate;
+            document.getElementById('status').value = data.status;
+            document.getElementById('isHot').checked = data.isHot === true;
+        })
+        .catch(error => {
+            alert(translations[languageSelect.value].alerts.loadError);
+        });
+
+    document.getElementById('editVoucherForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const language = document.getElementById('languageSelect').value;
+        const arrivalDate = new Date(document.getElementById('arrivalDate').value);
+        const evictionDate = new Date(document.getElementById('evictionDate').value);
+        const today = new Date();
+
+        if (arrivalDate < today) {
+            alert(translations[language].alerts.pastArrivalDate);
+            return;
+        }
+
+        if (arrivalDate > evictionDate) {
+            alert(translations[language].alerts.invalidDateOrder);
+            return;
+        }
+
+        const voucherData = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            price: parseFloat(document.getElementById('price').value),
+            tourType: document.getElementById('tourType').value,
+            transferType: document.getElementById('transferType').value,
+            hotelType: document.getElementById('hotelType').value,
+            status: document.getElementById('status').value,
+            arrivalDate: document.getElementById('arrivalDate').value,
+            evictionDate: document.getElementById('evictionDate').value,
+            isHot: document.getElementById('isHot').checked
+        };
+
+        fetch(`/vouchers/change/${voucherId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept-Language': language
+            },
+            body: JSON.stringify(voucherData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(translations[language].alerts.updateSuccess);
+                window.location.href = '/view/allVouchersAdmin';
+            })
+            .catch(error => {
+                alert(translations[language].alerts.updateError);
+            });
+    });
+    document.getElementById('voucherButton').addEventListener('click', () => {
+        window.location.href = '/view/allVouchersAdmin';
+    });
+    document.getElementById('usersButton').addEventListener('click', () => {
+        window.location.href = '/view/allUsers';
+    });
+    document.getElementById('logoutButton').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = '/view/login';
+    });
+</script>
+</body>
+</html>

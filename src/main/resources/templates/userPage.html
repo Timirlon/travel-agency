@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .voucher-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .voucher-table th, .voucher-table td {
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .voucher-table th {
+            background-color: #c7c5c5;
+        }
+
+        .voucher-table td button {
+            background-color: #e6e6e6;
+            border-radius: 20px;
+            padding: 5px 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 12px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .voucher-table td button:hover {
+            background-color: #c7c5c5;
+            cursor: pointer;
+        }
+
+        .navbar {
+            background-color: #c7c5c5;
+        }
+
+        .btn-custom {
+            background-color: #c7c5c5;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #4a4a4a;
+            cursor: pointer;
+        }
+
+        .form-control-sm {
+            font-size: 12px;
+            padding: 0.5rem;
+        }
+
+        .add-balance-btn {
+            background-color: #e6e6e6;
+            border-radius: 20px;
+            padding: 5px 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 12px;
+            border: none;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .add-balance-btn:hover {
+            background-color: #c7c5c5;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid d-flex">
+        <button class="btn btn-custom" id="vouchersButton">Vouchers</button>
+        <select id="languageSelect" class="form-select form-select-sm" style="width: auto;">
+            <option value="en">English</option>
+            <option value="kk">Қазақша</option>
+        </select>
+        <button class="btn ms-auto btn-custom" id="logoutButton">Logout</button>
+    </div>
+</nav>
+
+<div class="container d-flex flex-column align-items-center vh-100 py-5">
+    <div class="card p-4 mb-4" style="width: 100%;">
+        <h3 class="text-center mb-4" id="userProfileHeader">User Profile</h3>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" id="usernameField">Username: <span id="username"></span></li>
+            <li class="list-group-item" id="roleField">Role: <span id="role"></span></li>
+            <li class="list-group-item" id="statusField">Account Status: <span id="status"></span></li>
+            <li class="list-group-item" id="balanceField">Balance: $<span id="balance"></span>
+                <input type="number" id="balanceAmount" class="form-control form-control-sm" placeholder="Enter amount to add" step="0.01" style="display:inline-block; width:auto; margin-left:10px;">
+                <button class="btn add-balance-btn" id="updateBalanceButton" style="display:inline-block;">Add</button>
+            </li>
+            <li class="list-group-item" id="phoneField">Phone Number: <span id="phoneNumber"></span></li>
+        </ul>
+    </div>
+
+    <div class="card p-4" style="width: 100%;">
+        <h4 class="text-center mb-4" id="yourVouchersHeader">Your Vouchers</h4>
+        <table class="voucher-table">
+            <thead>
+            <tr>
+                <th id="titleHeader">Title</th>
+                <th id="descriptionHeader">Description</th>
+                <th id="priceHeader">Price</th>
+                <th id="tourTypeHeader">Tour Type</th>
+                <th id="transferTypeHeader">Transfer Type</th>
+                <th id="hotelTypeHeader">Hotel Type</th>
+                <th id="statusHeader">Status</th>
+                <th id="arrivalDateHeader">Arrival Date</th>
+                <th id="evictionDateHeader">Eviction Date</th>
+                <th id="hotHeader">Hot</th>
+                <th id="actionHeader">Action</th>
+            </tr>
+            </thead>
+            <tbody id="vouchersList">
+            </tbody>
+        </table>
+        <div id="paginationContainer" class="pagination d-flex justify-content-center mt-4"></div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+
+    const translations = {
+        en: {
+            vouchers: "Vouchers",
+            logout: "Logout",
+            userProfile: "User Profile",
+            yourVouchers: "Your Vouchers",
+            title: "Title",
+            description: "Description",
+            price: "Price",
+            tourType: "Tour Type",
+            transferType: "Transfer Type",
+            hotelType: "Hotel Type",
+            status: "Status",
+            arrivalDate: "Arrival Date",
+            evictionDate: "Eviction Date",
+            hot: "Hot",
+            action: "Action",
+            username: "Username",
+            role: "Role",
+            accountStatus: "Account Status",
+            balance: "Balance",
+            add: "Add",
+            cancelVoucher: "Cancel Voucher",
+            phoneNumber: "Phone Number",
+            enterAmount: "Enter amount to add",
+            invalidAmount: "Please enter a valid amount.",
+            balanceUpdated: "Balance updated successfully!",
+            balanceUpdateFailed: "Failed to update balance: ",
+            vouchersError: "Failed to load vouchers.",
+            userDataError: "Failed to load user data. Redirecting to login.",
+            generalError: "An error occurred. Please try again.",
+            cancelVoucherConfirm: "Are you sure you want to cancel this voucher?",
+            cancelVoucherSuccess: "Voucher canceled successfully!",
+            cancelVoucherError: "An error occurred while canceling the voucher."
+        },
+        kk: {
+            vouchers: "Ваучерлер",
+            logout: "Шығу",
+            userProfile: "Пайдаланушы профилі",
+            yourVouchers: "Сіздің ваучерлеріңіз",
+            title: "Атауы",
+            description: "Сипаттамасы",
+            price: "Бағасы",
+            tourType: "Тур түрі",
+            transferType: "Трансфер түрі",
+            hotelType: "Қонақүй түрі",
+            status: "Күйі",
+            arrivalDate: "Келу күні",
+            evictionDate: "Шығу күні",
+            hot: "Ыстық",
+            action: "Әрекет",
+            username: "Пайдаланушы аты",
+            role: "Рөлі",
+            accountStatus: "Аккаунт күйі",
+            balance: "Баланс",
+            add: "Қосу",
+            cancelVoucher: "Ваучерді тоқтату",
+            phoneNumber: "Телефон нөмірі",
+            enterAmount: "Қосу үшін соманы енгізіңіз",
+            invalidAmount: "Дұрыс соманы енгізіңіз.",
+            balanceUpdated: "Баланс сәтті жаңартылды!",
+            balanceUpdateFailed: "Балансты жаңарту сәтсіз аяқталды: ",
+            vouchersError: "Ваучерлерді жүктеу сәтсіз аяқталды.",
+            userDataError: "Пайдаланушы деректерін жүктеу сәтсіз аяқталды. Кіру бетіне бағытталуда.",
+            generalError: "Қате орын алды. Қайталап көріңіз.",
+            cancelVoucherConfirm: "Бұл ваучерді шынымен тоқтатқыңыз келе ме?",
+            cancelVoucherSuccess: "Ваучер сәтті тоқтатылды!",
+            cancelVoucherError: "Ваучерді тоқтату кезінде қате орын алды."
+        }
+    };
+
+    const languageSelect = document.getElementById('languageSelect');
+    const updateLanguage = (language) => {
+        document.getElementById('vouchersButton').textContent = translations[language].vouchers;
+        document.getElementById('logoutButton').textContent = translations[language].logout;
+        document.getElementById('userProfileHeader').textContent = translations[language].userProfile;
+        document.getElementById('yourVouchersHeader').textContent = translations[language].yourVouchers;
+        document.getElementById('titleHeader').textContent = translations[language].title;
+        document.getElementById('descriptionHeader').textContent = translations[language].description;
+        document.getElementById('priceHeader').textContent = translations[language].price;
+        document.getElementById('tourTypeHeader').textContent = translations[language].tourType;
+        document.getElementById('transferTypeHeader').textContent = translations[language].transferType;
+        document.getElementById('hotelTypeHeader').textContent = translations[language].hotelType;
+        document.getElementById('statusHeader').textContent = translations[language].status;
+        document.getElementById('arrivalDateHeader').textContent = translations[language].arrivalDate;
+        document.getElementById('evictionDateHeader').textContent = translations[language].evictionDate;
+        document.getElementById('hotHeader').textContent = translations[language].hot;
+        document.getElementById('actionHeader').textContent = translations[language].action;
+        document.getElementById("usernameField").childNodes[0].textContent = translations[language].username + ": ";
+        document.getElementById("roleField").childNodes[0].textContent = translations[language].role + ": ";
+        document.getElementById("statusField").childNodes[0].textContent = translations[language].accountStatus + ": ";
+        document.getElementById("balanceField").childNodes[0].textContent = translations[language].balance + ": $";
+        document.getElementById("updateBalanceButton").textContent = translations[language].add;
+        document.getElementById("balanceAmount").placeholder = translations[language].enterAmount;
+        document.getElementById("phoneField").childNodes[0].textContent = translations[language].phoneNumber + ": ";
+        document.querySelectorAll('.cancel-voucher-btn').forEach(button => {
+            button.textContent = translations[language].cancelVoucher || "Cancel Voucher";
+        });
+    };
+
+    const setInitialLanguage = () => {
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        document.getElementById('languageSelect').value = savedLanguage;
+        updateLanguage(savedLanguage);
+    };
+
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+        const selectedLanguage = e.target.value;
+        localStorage.setItem('language', selectedLanguage);
+        updateLanguage(selectedLanguage);
+    });
+    setInitialLanguage();
+    if (!token || !username) {
+        window.location.href = '/view/login';
+    }
+
+    fetch(`/users/${username}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept-Language': languageSelect.value
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.statusCode === 'OK') {
+                const user = data.data;
+                const language = languageSelect.value;
+                document.getElementById('username').textContent = user.username;
+                document.getElementById('role').textContent = user.role;
+                document.getElementById('status').textContent = user.accountStatus ? 'Active' : 'Inactive';
+                document.getElementById('balance').textContent = user.balance.toFixed(2);
+                document.getElementById('phoneNumber').textContent = user.phoneNumber;
+
+                document.getElementById('updateBalanceButton').addEventListener('click', () => {
+                    const amount = parseFloat(document.getElementById('balanceAmount').value);
+                    if (isNaN(amount) || amount <= 0) {
+                        alert(translations[language].invalidAmount);
+                        return;
+                    }
+
+                    fetch(`/users/${username}/balance?amount=${amount}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept-Language': languageSelect.value
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(updateData => {
+                            if (updateData.statusCode === 'OK') {
+                                document.getElementById('balance').textContent = updateData.data.balance.toFixed(2);
+                                alert(translations[language].balanceUpdated);
+                            } else {
+                                alert(translations[language].balanceUpdateFailed + updateData.statusMessage);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating balance:', error);
+                            alert(translations[language].generalError);
+                        });
+                });
+
+                let currentPage = 0;
+                let totalPages = 0;
+
+                const renderPagination = () => {
+                    const paginationContainer = document.getElementById('paginationContainer');
+                    paginationContainer.innerHTML = '';
+
+                    for (let i = 0; i < totalPages; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.classList.add('btn', 'btn-custom', 'mx-1');
+                        if (i === currentPage) {
+                            pageButton.classList.add('active');
+                        }
+                        pageButton.textContent = i + 1;
+
+                        pageButton.addEventListener('click', () => {
+                            fetchVouchers(i);
+                        });
+
+                        paginationContainer.appendChild(pageButton);
+                    }
+                };
+
+                const renderVoucher = (voucher) => {
+                    const voucherRow = document.createElement('tr');
+                    voucherRow.innerHTML = `
+                    <td>${voucher.title}</td>
+                    <td>${voucher.description}</td>
+                    <td>$${voucher.price.toFixed(2)}</td>
+                    <td>${voucher.tourType}</td>
+                    <td>${voucher.transferType}</td>
+                    <td>${voucher.hotelType}</td>
+                    <td>${voucher.status}</td>
+                    <td>${voucher.arrivalDate}</td>
+                    <td>${voucher.evictionDate}</td>
+                    <td>${voucher.isHot === 'true' ? 'Yes' : 'No'}</td>
+                    <td>
+                        ${voucher.status === 'PAID' ? `<button class="btn cancel-voucher-btn" data-voucher-id="${voucher.id}">${translations[language].cancelVoucher}</button>` : ''}
+                    </td>
+                `;
+                    return voucherRow;
+                };
+
+                const fetchVouchers = (page = 0) => {
+                    const vouchersList = document.getElementById('vouchersList');
+                    vouchersList.innerHTML = '';
+                    fetch(`/vouchers/${user.id}?page=${page}&size=2`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept-Language': languageSelect.value
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(voucherData => {
+                            if (voucherData.results.length > 0) {
+                                voucherData.results.forEach(voucher => {
+                                    vouchersList.appendChild(renderVoucher(voucher));
+                                });
+                                currentPage = voucherData.currentPage;
+                                totalPages = voucherData.totalPages;
+                                renderPagination();
+                            } else {
+                                vouchersList.innerHTML = '<tr><td colspan="11" class="text-center">' + translations[language].vouchersError + '</td></tr>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching vouchers:', error);
+                            alert(translations[language].vouchersError);
+                        });
+                };
+
+                fetchVouchers();
+
+            } else {
+                alert(translations[languageSelect.value].userDataError);
+                localStorage.clear();
+                window.location.href = '/view/login';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            alert(translations[languageSelect.value].generalError);
+            localStorage.clear();
+            window.location.href = '/view/login';
+        });
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('cancel-voucher-btn')) {
+            const voucherId = event.target.getAttribute('data-voucher-id');
+            const userId = localStorage.getItem('userId');
+            const language = languageSelect.value;
+            if (confirm(translations[languageSelect.value].cancelVoucherConfirm)) {
+                fetch(`/vouchers/cancel/${voucherId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept-Language': languageSelect.value
+                    },
+                    body: JSON.stringify({ userId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.statusCode === 'OK') {
+                            alert(translations[language].cancelVoucherSuccess);
+                            location.reload();
+                        } else {
+                            alert(translations[language].cancelVoucherError + data.statusMessage);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error canceling voucher:', error);
+                        alert(translations[language].cancelVoucherError);
+                    });
+            }
+        }
+    });
+
+    document.getElementById('logoutButton').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = '/view/login';
+    });
+
+    document.getElementById('vouchersButton').addEventListener('click', () => {
+        window.location.href = '/view/allVouchersUser';
+    });
+
+</script>
+
+</body>
+</html>

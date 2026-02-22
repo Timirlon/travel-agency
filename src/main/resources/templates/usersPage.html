@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #c7c5c5;
+        }
+
+        .btn-custom {
+            background-color: #c7c5c5;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #4a4a4a;
+            cursor: pointer;
+        }
+
+        .btn-status {
+            background-color: #6c757d;
+            border: none;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-status:hover {
+            background-color: #5a6268;
+        }
+
+        #usersList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid d-flex">
+        <button class="btn btn-custom" id="vouchersButton">Vouchers</button>
+        <select id="languageSelect" class="form-select form-select-sm" style="width: auto;">
+            <option value="en">English</option>
+            <option value="kk">Қазақша</option>
+        </select>
+        <button class="btn ms-auto btn-custom" id="logoutButton">Logout</button>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <h3 class="text-center mb-4">Users Management</h3>
+    <div id="usersList">
+
+    </div>
+    <div id="pagination" class="d-flex justify-content-center mt-4"></div>
+
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    const translations = {
+        en: {
+            vouchers: "Vouchers",
+            logout: "Logout",
+            noUsersFound: "No users found.",
+            phoneNumber: "Phone number",
+            role: "Role",
+            status: "Status",
+            active: "Active",
+            inactive: "Inactive",
+            activate: "Activate",
+            deactivate: "Deactivate",
+            failedToLoadUsers: "Failed to load users.",
+            userStatusUpdated: "User status updated successfully.",
+            userStatusUpdateFailed: "Failed to update user status: "
+        },
+        uk: {
+            vouchers: "Ваучери",
+            logout: "Вийти",
+            noUsersFound: "Користувачів не знайдено.",
+            phoneNumber: "Телефон",
+            role: "Роль",
+            status: "Статус",
+            active: "Активний",
+            inactive: "Неактивний",
+            activate: "Активувати",
+            deactivate: "Деактивувати",
+            failedToLoadUsers: "Не вдалося завантажити користувачів.",
+            userStatusUpdated: "Статус користувача успішно оновлено.",
+            userStatusUpdateFailed: "Не вдалося оновити статус користувача: "
+        }
+    };
+
+    const languageSelect = document.getElementById('languageSelect');
+    const updateLanguage = (language) => {
+        document.getElementById('vouchersButton').textContent = translations[language].vouchers;
+        document.getElementById('logoutButton').textContent = translations[language].logout;
+
+        const usersList = document.getElementById('usersList');
+        if (usersList.children.length > 0) {
+            Array.from(usersList.children).forEach(userCard => {
+                const username = userCard.querySelector('h5');
+                const phoneNumberLabel = userCard.querySelector('p:nth-of-type(1) strong');
+                const roleLabel = userCard.querySelector('p:nth-of-type(2) strong');
+                const statusLabel = userCard.querySelector('p:nth-of-type(3) strong');
+                const statusValue = userCard.querySelector('p:nth-of-type(3)');
+                const activateButton = userCard.querySelector('.btn-success');
+                const deactivateButton = userCard.querySelector('.btn-danger');
+
+                if (username && phoneNumberLabel && roleLabel && statusLabel && statusValue && activateButton && deactivateButton) {
+                    phoneNumberLabel.textContent = translations[language].phoneNumber + ':';
+                    roleLabel.textContent = translations[language].role + ':';
+                    statusLabel.textContent = translations[language].status + ':';
+                    const isActive = statusValue.textContent.includes(translations[language === 'en' ? 'kk' : 'en'].active);
+                    statusValue.innerHTML = `<strong>${translations[language].status}:</strong> ${isActive ? translations[language].active : translations[language].inactive}`;
+                    activateButton.textContent = translations[language].activate;
+                    deactivateButton.textContent = translations[language].deactivate;
+                }
+            });
+        }
+    };
+
+    const setInitialLanguage = () => {
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        document.getElementById('languageSelect').value = savedLanguage;
+        updateLanguage(savedLanguage);
+    };
+
+    languageSelect.addEventListener('change', (e) => {
+        const selectedLanguage = e.target.value;
+        localStorage.setItem('language', selectedLanguage);
+        updateLanguage(selectedLanguage);
+    });
+
+    setInitialLanguage();
+
+    if (!token) {
+        window.location.href = '/view/login';
+    }
+
+    let currentPage = 0;
+    let totalPages = 0;
+
+    function fetchUsers(page = 0) {
+        fetch(`/users/allUsers?page=${page}&size=3`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept-Language': languageSelect.value
+            }
+        })
+            .then(response => response.json())
+            .then(userData => {
+                const usersList = document.getElementById('usersList');
+                const pagination = document.getElementById('pagination');
+                const language = languageSelect.value;
+
+                usersList.innerHTML = '';
+                pagination.innerHTML = '';
+
+                if (userData.data && userData.data.length > 0) {
+                    userData.data.forEach(user => {
+                        const userCard = document.createElement('div');
+                        userCard.classList.add('card');
+                        userCard.innerHTML = `
+                        <h5>${user.username}</h5>
+                        <p><strong>${translations[language].phoneNumber}:</strong> ${user.phoneNumber}</p>
+                        <p><strong>${translations[language].role}:</strong> ${user.role}</p>
+                        <p><strong>${translations[language].status}:</strong> ${user.accountStatus ? translations[language].active : translations[language].inactive}</p>
+                        <button class="btn btn-success btn-status" data-id="${user.id}" data-status="true">${translations[language].activate}</button>
+                        <button class="btn btn-danger btn-status" data-id="${user.id}" data-status="false">${translations[language].deactivate}</button>
+                    `;
+
+                        const activateButton = userCard.querySelector('.btn-success');
+                        const deactivateButton = userCard.querySelector('.btn-danger');
+
+                        activateButton.addEventListener('click', () => {
+                            updateUserStatus(user.id, true);
+                        });
+
+                        deactivateButton.addEventListener('click', () => {
+                            updateUserStatus(user.id, false);
+                        });
+
+                        usersList.appendChild(userCard);
+                    });
+
+                    totalPages = userData.totalPages;
+                    currentPage = userData.currentPage;
+
+                    for (let i = 0; i < totalPages; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.classList.add('btn', 'btn-custom', 'mx-1');
+                        pageButton.textContent = i + 1;
+                        pageButton.disabled = i === currentPage;
+                        pageButton.addEventListener('click', () => fetchUsers(i));
+                        pagination.appendChild(pageButton);
+                    }
+                } else {
+                    usersList.innerHTML = `<p class="text-center">${translations[language].noUsersFound}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert(translations[languageSelect.value].failedToLoadUsers);
+            });
+    }
+
+    fetchUsers();
+
+    function updateUserStatus(userId, isActive) {
+        const language = languageSelect.value;
+        fetch('/users/changeAccountStatus', {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept-Language': languageSelect.value
+            },
+            body: JSON.stringify({ id: userId, accountStatus: isActive })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.statusCode === "OK") {
+                    alert(translations[language].userStatusUpdated);
+                    fetchUsers();
+                } else {
+                    alert(`${translations[language].userStatusUpdateFailed}${data.statusMessage}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating user status:', error);
+                alert(translations[language].userStatusUpdateFailed);
+            });
+    }
+
+    document.getElementById('vouchersButton').addEventListener('click', () => {
+        window.location.href = '/view/allVouchersAdmin';
+    });
+
+    document.getElementById('logoutButton').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = '/view/login';
+    });
+</script>
+</body>
+</html>
