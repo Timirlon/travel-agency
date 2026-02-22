@@ -48,7 +48,7 @@ public class UserController {
 
     @PostMapping("/role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> changeUserRole(@PathVariable("id") UUID id,
+    public ResponseEntity<?> changeUserRole(@PathVariable UUID id,
                                             @RequestParam("role") String newRole) {
         try {
             userService.changeUserRole(id, newRole);
@@ -60,7 +60,7 @@ public class UserController {
 
     @PostMapping("/status/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> changeUserStatus(@PathVariable("id") UUID id,
+    public ResponseEntity<?> changeUserStatus(@PathVariable UUID id,
                                               @RequestParam("active") boolean active) {
         try {
             UserDTO user = userService.getUserById(id);
@@ -74,7 +74,7 @@ public class UserController {
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String updateUser(@PathVariable("id") UUID id,
+    public String updateUser(@PathVariable UUID id,
                              @RequestParam("role") String role,
                              @RequestParam(value = "active", required = false) String active,
                              RedirectAttributes redirectAttributes) {
