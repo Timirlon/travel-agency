@@ -1,34 +1,94 @@
 package com.epam.finaltask.service;
 
+import com.epam.finaltask.dto.UserDTO;
+import com.epam.finaltask.exception.EntityAlreadyExistsException;
+import com.epam.finaltask.exception.EntityNotFoundException;
+import com.epam.finaltask.mapper.UserMapper;
+import com.epam.finaltask.model.User;
+import com.epam.finaltask.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
-import com.epam.finaltask.dto.UserDTO;
-
+@Service
 public class UserServiceImpl implements UserService {
 
-	@Override
-	public UserDTO register(UserDTO userDTO) {
-		return null;
-	}
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-	@Override
-	public UserDTO updateUser(String username, UserDTO userDTO) {
-		return null;
-	}
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	@Override
-	public UserDTO getUserByUsername(String username) {
-		return null;
-	}
+    @Override
+    public UserDTO register(UserDTO userDTO) {
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
+            throw new EntityAlreadyExistsException("This username already exists");
+        }
+        User userModel = userMapper.toUser(userDTO);
+        userModel.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-	@Override
-	public UserDTO changeAccountStatus(UserDTO userDTO) {
-		return null;
-	}
+        User savedUser = userRepository.save(userModel);
+        return userMapper.toUserDTO(savedUser);
+    }
 
-	@Override
-	public UserDTO getUserById(UUID id) {
-		return null;
-	}
+    @Override
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.map(userMapper::toUserDTO);
+    }
 
+    @Override
+    public UserDTO getUserById(UUID id) {
+        return userMapper.toUserDTO(
+                userRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id)));
+    }
+
+
+    @Override
+    public UserDTO getUserByUsername(String username) {
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+
+        if (!user.isActive()) {
+            throw new IllegalStateException("User is inactive: " + username);
+        }
+
+        return userMapper.toUserDTO(user);
+    }
+
+    @Override
+    public UserDTO updateBalance(String username, double amount) {
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        double newBalance = user.getBalance() + amount;
+
+        if (newBalance < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
+        }
+
+        user.setBalance(newBalance);
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserDTO(updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserDTO changeAccountStatus(UserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userDTO.getId()));
+        user.setActive(userDTO.isActive());
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserDTO(savedUser);
+    }
 }

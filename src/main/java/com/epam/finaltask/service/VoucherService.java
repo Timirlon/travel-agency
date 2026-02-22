@@ -1,23 +1,25 @@
 package com.epam.finaltask.service;
 
-import java.util.List;
-
 import com.epam.finaltask.dto.VoucherDTO;
-import com.epam.finaltask.model.HotelType;
-import com.epam.finaltask.model.TourType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface VoucherService {
     VoucherDTO create(VoucherDTO voucherDTO);
-    VoucherDTO order(String id, String userId);
+    VoucherDTO orderVoucher(String id, UUID userId);
     VoucherDTO update(String id, VoucherDTO voucherDTO);
     void delete(String voucherId);
-    VoucherDTO changeHotStatus(String id, VoucherDTO voucherDTO);
     List<VoucherDTO> findAllByUserId(String userId);
+    Page<VoucherDTO> findAllByUserId(String userId, Pageable pageable);
+    void changeTourStatus(String id, String status);
+    VoucherDTO changeHotStatus(String id, VoucherDTO voucherDTO);
+    void cancelVoucher(String voucherId, UUID userId);
 
-    List<VoucherDTO> findAllByTourType(TourType tourType);
-    List<VoucherDTO> findAllByTransferType(String transferType);
-    List<VoucherDTO> findAllByPrice(Double price);
-    List<VoucherDTO> findAllByHotelType(HotelType hotelType);
-
+    VoucherDTO findById(String voucherId);
+    Page<VoucherDTO> filterVouchers(String tourType, String transferType,  String hotelType, Double minPrice, Double maxPrice,Pageable pageable);
     List<VoucherDTO> findAll();
+    Page<VoucherDTO> findAll(Pageable pageable);
 }
